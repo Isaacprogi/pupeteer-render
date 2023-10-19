@@ -4,24 +4,9 @@ const path = require('path')
 
 const scrapeLogic = async (res) => {
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch({
-        args:[
-         "--disable-setuid-sandbox",
-         "--no-sandbox",
-         "--single-process",
-         "--no-zygote",
-        ],
-        headless: 'new',
-        executablePath:puppeteer.executablePath()
-    });
-
-   
-    
-
-
+    const browser = await puppeteer.launch();
 
     try {
-      
         const page = await browser.newPage();
 
         // Define your HTML content as a string
