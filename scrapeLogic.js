@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 require("dotenv").config()
+const path = require('path')
 
 const scrapeLogic = async (res) => {
     // Launch the browser and open a new blank page
@@ -10,9 +11,12 @@ const scrapeLogic = async (res) => {
          "--single-process",
          "--no-zygote",
         ],
+        headless: 'new',
         executablePath: process.env.NODE_ENV ==='production'? process.env.PUPPETEER_EXECUTABLE_PATH:
-        puppeteer.executablePath
+        puppeteer.executablePath()
     });
+
+   
     
 
 
@@ -21,29 +25,27 @@ const scrapeLogic = async (res) => {
       
         const page = await browser.newPage();
 
-        // Navigate the page to a URL
-        await page.goto('https://developer.chrome.com/');
-
-        // Set screen size
-        await page.setViewport({ width: 1080, height: 1024 });
-
-        // Type into search box
-        await page.type('.search-box__input', 'automate beyond recorder');
-
-        // Wait and click on first result
-        const searchResultSelector = '.search-box__link';
-        await page.waitForSelector(searchResultSelector);
-        await page.click(searchResultSelector);
-
-        // Locate the full title with a unique string
-        const textSelector = await page.waitForSelector(
-            'text/Customize and automate'
-        );
-        const fullTitle = await textSelector?.evaluate(el => el.textContent);
-
-        // Print the full title
-        console.log('The title of this blog post is "%s".', fullTitle);
-        res.send(fullTitle)
+        // Define your HTML content as a string
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Sample PDF</title>
+          </head>
+          <body>
+              <h1>Hello, PDF Generation with Puppeteer</h1>
+              <p>This is a sample PDF generated from HTML content.</p>
+          </body>
+          </html>
+        `;
+      
+        // Set the HTML content of the page
+        await page.setContent(htmlContent);
+      
+        // Generate a PDF
+        await page.pdf({ path: 'output.pdf', format: 'A4' });
+        res.sendFile(path.join(__dirname,'output.pdf'))
+        
 
     } catch (error) {
         console.log(error)
@@ -51,7 +53,7 @@ const scrapeLogic = async (res) => {
     } finally {
         await browser.close();
     }
-    res.send('Hello fromscrapeLogin')
+
 }
 
 module.exports = scrapeLogic
