@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 4000
 
 
 app.get('/', (req,res)=>{
-    res.semd('Render pupeteer server is up and running')
+    res.send('Render pupeteer server is up and running')
 })
 
 app.get('/scrape', (req,res)=>{
